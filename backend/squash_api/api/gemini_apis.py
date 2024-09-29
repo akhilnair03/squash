@@ -1,7 +1,7 @@
 from datetime import datetime
 import squash_api
 import flask
-
+from flask import request
 import os
 import pymongo
 import sys
@@ -181,11 +181,14 @@ def gemini_generator(prompt):
 
 @squash_api.app.route('/get_recipes', methods=['POST'])
 def get_recipes():
-    meal = flask.request.args.get('food_type')
+    data = request.get_json()
+    meal = data.get("food_type")
+    print(meal)
     inventory = get_inventory1() # dictionary {'fridge':[], 'pantry': []}
+    print(inventory)
     res=""    
     for type in inventory:
-        for item in type:
+        for item in inventory[type]:
             res+= f"{item['name']}, {item['quantity']}, {item['unit']}"
 
 
@@ -226,7 +229,7 @@ def get_recipes():
     #     f"Make sure the final output is PROPER JSON format"
     # )
 
-    return flask.jsonify(**gemini_generator(prompt)), 201
+    return flask.jsonify(gemini_generator(prompt)), 201
 
 @squash_api.app.route('/upload_receipt/', methods=["POST"])
 def upload_receipt():

@@ -4,12 +4,11 @@ import Background from "../components/Background";
 import Header from "../components/Header";
 import AppIcon from "../components/AppIcon";
 import Button from "../components/Button";
-import { Camera } from 'expo-camera';
+import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import { Audio } from 'expo-av';
 
 export default function HomeScreen({ navigation }) {
-  const [hasCameraPermission, setHasCameraPermission] = useState(null);
-  const [hasAudioPermission, setHasAudioPermission] = useState(null);
+  const [facing, setFacing] = useState<CameraType>('back');
 
   // Request permissions on component mount
   useEffect(() => {
@@ -28,16 +27,6 @@ export default function HomeScreen({ navigation }) {
       navigation.navigate("CameraScreen"); // Create this screen to handle camera input
     } else {
       Alert.alert("Camera Permission", "Permission to access camera is required.");
-    }
-  };
-
-  // Handle microphone functionality
-  const handleMicrophonePress = () => {
-    if (hasAudioPermission) {
-      // Implement microphone functionality here
-      Alert.alert("Microphone", "Microphone functionality will be implemented here.");
-    } else {
-      Alert.alert("Microphone Permission", "Permission to access microphone is required.");
     }
   };
 

@@ -1,7 +1,0 @@
-pymongo[srv]
-flask
-python-dotenv
-octoai
-SpeechRecognition
-whisper
-requests
