@@ -146,6 +146,7 @@ def transcribe_audio(audio_data, sample_rate=16000):
 
 
 def main():
+    pass
     # Step 1: Record audio without saving to a file
     # audio_data = record_audio(duration=10)  # Record for 5 seconds
 
@@ -153,7 +154,7 @@ def main():
     # text = transcribe_audio(audio_data)
     
     # RECEIPT SCANNING
-    scan_receipts()
+    # scan_receipts()
     # Step 3: Process transcribed text with OctoAI
     # format_STT(text)
     # If needed, you can return or further process 'output'
