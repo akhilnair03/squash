@@ -8,11 +8,17 @@ from datetime import datetime
 import json
 import requests
 from dotenv import load_dotenv
+from enum import Enum
 
 load_dotenv()
 gemini_key = os.getenv("GEMINI_API_KEY")
 ocr_key = os.getenv("OCR_API_KEY")
 
+
+class Forms(Enum):
+    STT = 1
+    RECOMMEND = 2
+    RECEIPT = 3
 
 def record_audio(duration=5, sample_rate=16000, chunk_size=1024, channels=1):
     audio_format = pyaudio.paInt16  # 16-bit resolution
@@ -96,19 +102,39 @@ def scan_receipts(img=None):
 
 
 
-def format_STT(text):
+def gemini_generator(text,input_form: Forms=Forms.STT, meal=None):
     genai.configure(api_key=gemini_key)
     model = genai.GenerativeModel("gemini-1.5-pro-latest")
 
     date_str = f"Today's date is {datetime.now().date()}. Message = "
-    audio_input=text
-    # audio_input = "2 apples in a few days, 3 bananas in around 5 days, 8 eggs in 3 days"
-    prompt = date_str + audio_input + """: convert this into JSON format. Only output the JSON.
 
-    Use this JSON schema:
+    if input_form == Forms.STT:
+        prompt = date_str + text + """: convert this into JSON format. Only output the JSON.
 
-    Food = {"name": str, count": int, "expiry": date}
-    Return: {"pantry": list[Food], "fridge": list[Food]"""
+        Use this JSON schema:
+
+        Food = {"name": str, count": int, "expiry": date}
+        Return: {"pantry": list[Food], "fridge": list[Food]"""
+    elif input_form == Forms.RECEIPT:
+        prompt = date_str + text + """: convert this into JSON format. Generalize the food items i.e. make lowercase and ensure spelling is correct and plural. Divide weight by average weight of item to obtain count. Only output the JSON. 
+
+        Use this JSON schema:
+
+        Food = {"name": str, count": int, "expiry": date}
+        Return: {"pantry": list[Food], "fridge": list[Food]"""
+    else:
+        # TODO : UPDATE THE JSON SCHEMA
+        # ADD BREAKFAST DINNER LUNCH
+
+        prompt = date_str + text + """: using these ingredients along with their quantities and units, give me 3 recipes for a dish in the following format e.g. [{“name”: “pasta”, “ingredients”: [“pasta sauce: 5 oz”, “frozen veggies: .2 lbs”, “raviolli: .1 lbs”], “instructions”: [“Boil the pasta”, “Add spices”, ...], “time (mins)“: 20}
+        and for the 
+        Use this JSON schema:
+
+        Food = {"name": str, count": int, "expiry": date}
+        Return: {"pantry": list[Food], "fridge": list[Food]"""
+
+
+
     result = model.generate_content(prompt)
     generated_json = result.text
     clean_json = generated_json.replace("```json", "").replace("```", "").strip()
@@ -125,7 +151,9 @@ def main():
 
     # Step 2: Transcribe audio data to text
     # text = transcribe_audio(audio_data)
-    print(scan_receipts())
+    
+    # RECEIPT SCANNING
+    scan_receipts()
     # Step 3: Process transcribed text with OctoAI
     # format_STT(text)
     # If needed, you can return or further process 'output'
