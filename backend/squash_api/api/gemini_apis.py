@@ -2,6 +2,7 @@ from datetime import datetime
 import squash_api
 import flask
 from flask import request
+
 import os
 import pymongo
 import sys
@@ -30,58 +31,6 @@ except pymongo.errors.ConfigurationError:
 db = client.inventory
 
 
-# @app.route("/add_food/<collection: str>/<item_name: str>/<quantity: int>/<unit: str>/<expiryDate: str>",methods=['POST'])
-def insert_food(collection, item_name, quantity, unit, expiryDate):
-    db_collection = db[collection]
-    db_collection.insert_one({"name": item_name, "quantity": quantity, "unit": unit, "expiryDate": expiryDate})
-
-
-# @app.route("/count/<collection: str>/<name: str>",methods=['GET'])
-def get_count(collection, item_name):
-    results = db[collection].find({"name": item_name})
-    amount = 0
-    for result in results:
-        amount += result["quantity"]
-    # print(amount)
-    return amount
-
-# @app.route("/delete/<collection: str>/<item_name: str>/<amount: int>",methods=['POST'])
-def delete_food1(collection, item_name, amount): #amount = 4
-    foods = db[collection].find({"name": item_name}).sort({"expiryDate": 1}).to_list()
-    total = 0 # 8
-    for food in foods:
-        total += food["quantity"]
-    removed = 0
-    i = 0
-    while removed < amount and i < len(foods):
-        food = foods[i]
-        if food["quantity"] <= amount - removed:
-            db[collection].delete_one({"_id": food["_id"]})
-            removed += food["quantity"]
-            i += 1
-        else:
-            db[collection].update_one({"_id": food["_id"]}, {"$set": {"quantity": food["quantity"] - (amount - removed)}})
-            removed = amount
-
-# @app.route("/inventory",methods=['GET'])
-def get_inventory1():
-    collections = db.list_collection_names()
-    all_documents = {'fridge':[], 'pantry':[]}
-    visited = set()
-    for collection_name in collections:
-        collection = db[collection_name]
-        documents = collection.find()
-        for document in documents:
-            if document["name"] not in visited:
-                item_info = {"name": document["name"], "quantity": get_count(collection_name, document["name"]), "unit": document["unit"]}
-                all_documents[collection_name].append(item_info)
-                visited.add(document["name"])
-                # all_documents.append({"name": document["name"], "quantity": get_count(collection_name, document["name"]), "unit": document["unit"]})
-                # all_documents.append(   (document["name"], get_count(collection_name, document["name"]), document["unit"])   )
-                
-    # print(all_documents)
-    return all_documents
-    
 
 
 ''' 
@@ -254,7 +203,8 @@ def upload_receipt():
 
 @squash_api.app.route('/upload_speech',methods=['POST'])
 def upload_speech():
-    transcript = flask.request.args.get('transcript')
+    transcript = "I bought 10 apples, 5 bananas, and 4 gallons of milk, and 4 dozen eggs from the store"
+    # transcript = flask.request.args.get('transcript')
     date_str = f"Today's date is {datetime.now().date()}. Message = "
     prompt = date_str + transcript + """: convert this into JSON format. Only output the JSON.
 
@@ -267,7 +217,35 @@ def upload_speech():
     
     return flask.jsonify(**gemini_generator(prompt)), 201
 
+def get_location():
+    try:
+        # Make a request to the ipinfo API
+        response = requests.get('https://ipinfo.io/')
+        
+        # If the request was successful
+        if response.status_code == 200:
+            # Parse the JSON data
+            data = response.json()
+            # Extract location information
+            location = {
+                # 'IP': data.get('ip'),
+                # 'City': data.get('city'),
+                # 'Region': data.get('region'),
+                # 'Country': data.get('country'),
+                'Location': data.get('loc')  # Latitude and Longitude
+            }
+            return location
+        else:
+            return None
+    except Exception as e:
+        return str(e)
 
+@squash_api.app.route('/find_food_banks', methods=['GET'])
+def find_food_banks():
+    location = get_location()
+    location = location['Location']
+    prompt = "Find me Food Banks within a 30 mile radius of this location {}. ONLY Return a JSON with the name of the Food Bank, its hours of operation, address, and phone number".format(location)
+    return flask.jsonify(**gemini_generator(prompt)), 201
 
 
 '''
@@ -285,13 +263,63 @@ def delete_food():
 
 @squash_api.app.route('/get_inventory', methods=['GET'])
 def get_inventory():
-
     # a list of tuples
     get_inventory1()
 
-    pass
+
+# @app.route("/add_food/<collection: str>/<item_name: str>/<quantity: int>/<unit: str>/<expiryDate: str>",methods=['POST'])
+def insert_food(collection, item_name, quantity, unit, expiryDate):
+    db_collection = db[collection]
+    db_collection.insert_one({"name": item_name, "quantity": quantity, "unit": unit, "expiryDate": expiryDate})
 
 
+# @app.route("/count/<collection: str>/<name: str>",methods=['GET'])
+def get_count(collection, item_name):
+    results = db[collection].find({"name": item_name})
+    amount = 0
+    for result in results:
+        amount += result["quantity"]
+    # print(amount)
+    return amount
+
+# @app.route("/delete/<collection: str>/<item_name: str>/<amount: int>",methods=['POST'])
+def delete_food1(collection, item_name, amount): #amount = 4
+    foods = db[collection].find({"name": item_name}).sort({"expiryDate": 1}).to_list()
+    total = 0 # 8
+    for food in foods:
+        total += food["quantity"]
+    removed = 0
+    i = 0
+    while removed < amount and i < len(foods):
+        food = foods[i]
+        if food["quantity"] <= amount - removed:
+            db[collection].delete_one({"_id": food["_id"]})
+            removed += food["quantity"]
+            i += 1
+        else:
+            db[collection].update_one({"_id": food["_id"]}, {"$set": {"quantity": food["quantity"] - (amount - removed)}})
+            removed = amount
+
+# @app.route("/inventory",methods=['GET'])
+def get_inventory1():
+    print("before")
+    collections = db.list_collection_names()
+    all_documents = {'fridge':[], 'pantry':[]}
+    visited = set()
+    for collection_name in collections:
+        collection = db[collection_name]
+        documents = collection.find()
+        for document in documents:
+            if document["name"] not in visited:
+                item_info = {"name": document["name"], "quantity": get_count(collection_name, document["name"]), "unit": document["unit"]}
+                all_documents[collection_name].append(item_info)
+                visited.add(document["name"])
+                # all_documents.append({"name": document["name"], "quantity": get_count(collection_name, document["name"]), "unit": document["unit"]})
+                # all_documents.append(   (document["name"], get_count(collection_name, document["name"]), document["unit"])   )
+    print("AFTER")
+    # print(all_documents)
+    return all_documents
+    
 
 
 
