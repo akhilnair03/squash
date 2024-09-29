@@ -116,6 +116,9 @@ export default function HomeScreen({ navigation }) {
       </View>
 
       <View style={styles.buttonContainer}>
+        <Button onPress={() => navigation.navigate("CameraScreen")}>
+          Take picture of receipt
+        </Button>
         <Button onPress={() => navigation.navigate("FoodTypeScreen", { type: "breakfast" })}>
           Breakfast
         </Button>

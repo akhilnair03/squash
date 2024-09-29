@@ -18,7 +18,8 @@ import {
   HomeScreen,
   FoodBankScreen,
   InventoryScreen,
-  FoodTypeScreen
+  FoodTypeScreen,
+  CameraScreen
 } from "./app/screens";
 
 const Stack = createStackNavigator();
@@ -59,6 +60,7 @@ export default function App() {
           <Stack.Screen name="ResetPasswordScreen" component={ResetPasswordScreen} />
           <Stack.Screen name="HomeScreen" component={AppDrawerNavigator} />
           <Stack.Screen name="FoodTypeScreen" component={FoodTypeScreen} />
+          <Stack.Screen name="CameraScreen" component={CameraScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </Provider>

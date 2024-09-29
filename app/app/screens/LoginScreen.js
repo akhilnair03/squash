@@ -32,7 +32,7 @@ export default function LoginScreen({ navigation }) {
 
   return (
     <Background>
-      <AppIcon filename={"back.png"} functionality={navigation.goBack} />
+      <AppIcon filename={"back1.png"} functionality={navigation.goBack} />
       <Logo />
       <Header>Hello.</Header>
       <TextInput

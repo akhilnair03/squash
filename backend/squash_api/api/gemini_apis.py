@@ -64,7 +64,8 @@ def scan_receipts(img_data):
         'isOverlayRequired': 'false',
         'iscreatesearchablepdf': 'false',
         'issearchablepdfhidetextlayer': 'false',
-        'isTable': 'true'
+        'isTable': 'true',
+        'base64Image': img_data
     }
 
     headers = {
@@ -73,7 +74,8 @@ def scan_receipts(img_data):
     # print('AARYAAAAA\n\n\n\n')
     # return "3 apples, 2 bananas"
     # Send the image to OCR.space
-    response = requests.post(url, headers=headers, data=payload, files=files)
+    response = requests.post(url, headers=headers, data=payload)
+    print("hellllll")
     result = response.json()
 
     # Check if the OCR request was successful
@@ -209,26 +211,30 @@ def allowed_file(filename):
 @squash_api.app.route('/upload_receipt/', methods=["POST"])
 def upload_receipt():
     # print(request.files)
-    # print('Akhil')
-    image_file = request.files.get("'data'")
-    # Check if the image file is in the request
-    if not image_file:
-        return jsonify({"error": "No image file provided"}), 400
+    print('Akhil')
+    output = json.loads(request.get_data())
+    image_file = output["data"]
+    # print(image_file)
+    # # Check if the image file is in the request
+    # if not image_file:
+    #     return jsonify({"error": "No image file provided"}), 400
 
 
-    # If the user does not select a file
-    if image_file.filename == '':
-        return jsonify({"error": "No selected file"}), 400
+    # # If the user does not select a file
+    # if image_file.filename == '':
+    #     return jsonify({"error": "No selected file"}), 400
 
-    # Optionally, validate the file type
-    if not allowed_file(image_file.filename):
-        return jsonify({"error": "Unsupported file type"}), 400
+    # # Optionally, validate the file type
+    # if not allowed_file(image_file.filename):
+    #     return jsonify({"error": "Unsupported file type"}), 400
 
-    # Read the image data into memory
-    image_data = image_file.read()
+    # # Read the image data into memory
+    # image_data = image_file.read()
 
     # Pass the image data to scan_receipts
-    text = scan_receipts(image_data)
+    text = scan_receipts(image_file)
+    # print("HI")
+    # print(text)
     date_str = f"Today's date is {datetime.now().date()}. Message = "
     prompt = date_str+ "This is the current date " + text + """: convert this into JSON format. Generalize the food items i.e. make lowercase and ensure spelling is correct and plural. Divide weight by average weight of item to obtain count. If an expiry date is not given, add the average expiry time onto the current date. Only output the JSON. 
 
@@ -240,11 +246,13 @@ def upload_receipt():
     """
 
     # Generate the response using gemini_generator
-    response_data = gemini_generator(prompt)
+    response = gemini_generator(prompt)
+    for type in response:
+        for food in response[type]:
+            insert_food(type, food['name'], food['count'], None, food['expiry'])
+    # print(response_data)
 
-    
-
-    return jsonify(response_data), 201
+    return jsonify(response), 201
 
 
 # def upload_receipt():

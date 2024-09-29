@@ -57,7 +57,7 @@ export default function FoodType({ route, navigation }) {
 
   return (
     <Background>
-      <AppIcon filename={"back.png"} functionality={navigation.goBack} />
+      <AppIcon filename={"back1.png"} functionality={navigation.goBack} />
       <View style={styles.container}>
         <Text style={styles.title}>{type.charAt(0).toUpperCase() + type.slice(1)} Menu</Text>
         <FlatList

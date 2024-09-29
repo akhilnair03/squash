@@ -4,6 +4,7 @@ import { getStatusBarHeight } from "react-native-status-bar-height";
 
 const imageMap = {
   'back.png': require('../../assets/items/back.png'),
+  'back1.png': require('../../assets/items/back.png'),
   // 'camera.jpg': require('../../assets/items/camera.jpg'),
   'microphone.png': require('../../assets/items/microphone.png')
   // Add more image files here if needed
@@ -15,7 +16,15 @@ export default function AppIcon({ filename, functionality }) {
   console.log(functionality)
 
   // Conditionally apply the container style for the back icon
-  const containerStyle = filename === 'back.png' ? styles.container : styles.media;
+  let containerStyle = styles.defaultContainer;
+  if (filename === 'back.png') {
+    containerStyle = styles.container;
+  } else if (filename === 'microphone.png') {
+    containerStyle = styles.voice_media;
+  }
+  else if (filename === 'back1.png') {
+    containerStyle = styles.defaultContainer;
+  }
 
   return (
     <TouchableOpacity onPress={functionality} style={containerStyle}>
@@ -28,12 +37,18 @@ export default function AppIcon({ filename, functionality }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
+  defaultContainer: {
+    // A default style if no filename condition is matched
     position: "absolute", 
     top: 10 + getStatusBarHeight(), 
-    left: 4, 
+    left: 4,
   },
-  media: {
+  container: {
+    // position: "absolute", 
+    // top: 10 + getStatusBarHeight(), 
+    // left: 4, 
+  },
+  voice_media: {
     position: "absolute", 
     top: 10 + getStatusBarHeight(), 
     left: 350,
