@@ -16,7 +16,6 @@ app.config.from_object('squash_api.config')
 # EXAMPLE:
 # $ export INSTA485_SETTINGS=secret_key_config.py
 app.config.from_envvar('SQUASH_SETTINGS', silent=True)
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16 MB
 
 # Tell our app about views and model.  This is dangerously close to a
 # circular import, which is naughty, but Flask was designed that way.
