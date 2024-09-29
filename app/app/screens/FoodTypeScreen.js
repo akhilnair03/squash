@@ -59,11 +59,23 @@ export default function FoodType({ route, navigation }) {
         <Text style={styles.title}>{type} Menu</Text>
         <FlatList
           data={recipes}
-          keyExtractor={(item) => item.id.toString()} // Make sure item has a unique key
+          keyExtractor={(item) => item.name} // Assuming name is unique
           renderItem={({ item }) => (
             <View style={styles.recipeItem}>
-              <Text style={styles.recipeTitle}>{item.title}</Text>
-              <Text>{item.description}</Text> {/* Adjust based on the structure of your recipe objects */}
+              <Text style={styles.recipeTitle}>{item.name}</Text>
+              <Text style={styles.label}>Ingredients:</Text>
+              {item.ingredients.map((ingredient, index) => (
+                <Text key={index}>
+                  {ingredient.ingredient_name}: {ingredient.quantity}
+                </Text>
+              ))}
+              <Text style={styles.label}>Cooking Time: {item.time}</Text>
+              <Text style={styles.label}>Instructions:</Text>
+              {item.instructions.map((step, index) => (
+                <Text key={index}>
+                  {index + 1}. {step}
+                </Text>
+              ))}
             </View>
           )}
         />
