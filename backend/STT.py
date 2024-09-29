@@ -2,6 +2,24 @@ import pyaudio
 import numpy as np
 import whisper
 
+import google.generativeai as genai
+import os
+from datetime import datetime
+import json
+import requests
+from dotenv import load_dotenv
+from enum import Enum
+
+load_dotenv()
+gemini_key = os.getenv("GEMINI_API_KEY")
+ocr_key = os.getenv("OCR_API_KEY")
+
+
+class Forms(Enum):
+    STT = 1
+    RECOMMEND = 2
+    RECEIPT = 3
+
 def record_audio(duration=5, sample_rate=16000, chunk_size=1024, channels=1):
     audio_format = pyaudio.paInt16  # 16-bit resolution
 
@@ -14,7 +32,7 @@ def record_audio(duration=5, sample_rate=16000, chunk_size=1024, channels=1):
                     input=True,
                     frames_per_buffer=chunk_size)
 
-    print("Recording...")
+    # print("Recording...")
 
     frames = []
 
@@ -23,7 +41,7 @@ def record_audio(duration=5, sample_rate=16000, chunk_size=1024, channels=1):
         data = stream.read(chunk_size)
         frames.append(np.frombuffer(data, dtype=np.int16))
 
-    print("Finished recording.")
+    # print("Finished recording.")
 
     # Stop and close the stream 
     stream.stop_stream()
@@ -43,197 +61,104 @@ def transcribe_audio(audio_data, sample_rate=16000):
     audio_data = audio_data.astype(np.float32) / 32768.0  # Normalize 16-bit int to float32
 
     # Run the transcription
-    print("Transcribing audio...")
+    # print("Transcribing audio...")
     result = model.transcribe(audio_data, fp16=False)
     text = result["text"]
-    print("Transcribed Text:")
-    print(text)
+    # print("Transcribed Text:")
+    # print(text)
     return text
+
+
+# def scan_receipts(img=None):
+
+#     url = "https://api.ocr.space/parse/image"
+#     api_key = ocr_key
+#     image_path = "receipt2.png"
+
+#     with open(image_path, 'rb') as image_file:
+#         files = {
+#             'file': image_file
+#         }
+        
+#         payload = {
+#             'language': 'eng',
+#             'isOverlayRequired': 'false',
+#             'iscreatesearchablepdf': 'false',
+#             'issearchablepdfhidetextlayer': 'false',
+#             'isTable': 'true'
+#         }
+
+#         headers = {
+#             'apikey': api_key
+#         }
+#         # Send the image to OCR.space
+#         response = requests.post(url, headers=headers, data=payload, files=files)
+#         result = response.json()
+
+#         # Print the result
+#         # print(result['ParsedResults'][0]['ParsedText'])
+#         res = result['ParsedResults'][0]['ParsedText'].split('\t\r\n')
+#         return ','.join(res)
+
+
+
+# def gemini_generator(text,input_form: Forms=Forms.STT, meal=None):
+#     genai.configure(api_key=gemini_key)
+#     model = genai.GenerativeModel("gemini-1.5-pro-latest")
+
+#     date_str = f"Today's date is {datetime.now().date()}. Message = "
+
+#     if input_form == Forms.STT:
+#         prompt = date_str + text + """: convert this into JSON format. Only output the JSON.
+
+#         Use this JSON schema:
+
+#         Food = {"name": str, count": int, "expiry": date}
+#         Return: {"pantry": list[Food], "fridge": list[Food]"""
+#     elif input_form == Forms.RECEIPT:
+#         prompt = date_str + text + """: convert this into JSON format. Generalize the food items i.e. make lowercase and ensure spelling is correct and plural. Divide weight by average weight of item to obtain count. Only output the JSON. 
+
+#         Use this JSON schema:
+
+#         Food = {"name": str, count": int, "expiry": date}
+#         Return: {"pantry": list[Food], "fridge": list[Food]"""
+#     else:
+#         # TODO : UPDATE THE JSON SCHEMA
+#         # ADD BREAKFAST DINNER LUNCH
+
+#         prompt = date_str + text + """: using these ingredients along with their quantities and units, give me 3 recipes for a dish in the following format e.g. [{“name”: “pasta”, “ingredients”: [“pasta sauce: 5 oz”, “frozen veggies: .2 lbs”, “raviolli: .1 lbs”], “instructions”: [“Boil the pasta”, “Add spices”, ...], “time (mins)“: 20}
+#         and for the 
+#         Use this JSON schema:
+
+#         Food = {"name": str, count": int, "expiry": date}
+#         Return: {"pantry": list[Food], "fridge": list[Food]"""
+
+
+
+#     result = model.generate_content(prompt)
+#     generated_json = result.text
+#     clean_json = generated_json.replace("```json", "").replace("```", "").strip()
+#     ingredients = json.loads(clean_json)
+
+#     return json.loads(ingredients)
 
 
 
 
 def main():
+    pass
     # Step 1: Record audio without saving to a file
-    audio_data = record_audio(duration=5)  # Record for 5 seconds
+    # audio_data = record_audio(duration=10)  # Record for 5 seconds
 
     # Step 2: Transcribe audio data to text
-    text = transcribe_audio(audio_data)
-
+    # text = transcribe_audio(audio_data)
+    
+    # RECEIPT SCANNING
+    # scan_receipts()
     # Step 3: Process transcribed text with OctoAI
-    # output = process_with_octoai(text)
-    # print(output)
+    # format_STT(text)
     # If needed, you can return or further process 'output'
     # return output
 
 if __name__ == "__main__":
     main()
-
-
-# import SpeechRecognition as sr
-# import whisper
-# import requests
-# import json
-# import pyaudio
-# from octoai import OctoAI, ChatMessage, ChatCompletionResponseFormat
-
-# # Initialize the speech recognizer
-# r = sr.Recognizer()
-
-# # Step 1: Capture microphone input
-# with sr.Microphone() as source:
-#     print("Please say something...")
-#     audio = r.listen(source)
-
-#     # Save the audio data to a WAV file
-#     with open("input.wav", "wb") as f:
-#         f.write(audio.get_wav_data())
-
-# # Step 2: Convert speech to text using Whisper
-# print("Transcribing audio...")
-# model = whisper.load_model("base")  # Options: 'tiny', 'base', 'small', 'medium', 'large'
-# result = model.transcribe("input.wav")
-# text = result["text"]
-# print(f"Transcribed Text: {text}")
-
-# # Step 3: Send text to Llama 3 via OctoAI
-# # Replace 'YOUR_OCTOAPI_KEY' with your actual OctoAI API key
-# client = OctoAI(
-#     api_key="YOUR_OCTOAPI_KEY"
-# )
-
-# # Define the schema for the expected JSON output
-# class Output:
-#     @staticmethod
-#     def model_json_schema():
-#         return {
-#             "type": "object",
-#             "properties": {
-#                 "transactions": {
-#                     "type": "array",
-#                     "items": {
-#                         "type": "object",
-#                         "properties": {
-#                             "sender": {"type": "string"},
-#                             "receiver": {"type": "string"},
-#                             "currency": {"type": "string"},
-#                             "amount": {"type": "number"},
-#                             "items": {"type": "string"},
-#                         },
-#                         "required": ["sender", "receiver", "currency", "amount", "items"],
-#                     },
-#                 }
-#             },
-#             "required": ["transactions"],
-#         }
-
-# # Prepare the messages for the chat completion
-# messages = [
-#     ChatMessage(
-#         content=(
-#             "Extract the receiver, sender, currency, amount, and items from the given text for each transaction. "
-#             "If there are N senders in one transaction, make N transactions. Use context clues. "
-#             "Return only in a JSON format with no other content at all."
-#         ),
-#         role="system"
-#     ),  # Instructions for the model
-#     ChatMessage(
-#         content=text,
-#         role="user"
-#     )  # User input (transcribed text)
-# ]
-
-# # Prepare the response format
-# response_format = ChatCompletionResponseFormat(
-#     type="json_object",
-#     schema=Output.model_json_schema(),
-# )
-
-# # Create the chat completion
-# print("Sending request to Llama 3 via OctoAI...")
-# model_output = client.text_gen.create_chat_completion(
-#     model="meta-llama-3-8b-instruct",
-#     messages=messages,
-#     max_tokens=512,
-#     presence_penalty=0,
-#     temperature=0,
-#     top_p=1,
-#     response_format=response_format,
-# )
-
-# # Step 4: Handle the response
-# output_content = model_output.choices[0].message.content
-# print("Received output:")
-# print(json.dumps(output_content, indent=2))
-
-# If you need to return the output from a function, uncomment the following line
-# return output_content
-
-
-
-
-
-
-
-
-# # Import necessary libraries
-# from google.cloud import speech_v1p1beta1 as speech
-# import json
-# from flask import Flask, request, jsonify
-# # from octoai.text_gen import ChatMessage, ChatCompletionResponseFormat
-# # from octoai.client import OctoAI
-# # from pydantic import BaseModel
-
-# #Initialize Flask API
-# app = Flask(__name__)
-
-
-
-# def transcribe_speech_to_text(audio_file_path):
-#     # Initialize the client
-#     client = speech.SpeechClient()
-
-#     # Load audio file
-#     with open(audio_file_path, 'rb') as audio_file:
-#         content = audio_file.read()
-
-#     # Configure request
-#     audio = speech.RecognitionAudio(content=content)
-#     config = speech.RecognitionConfig(
-#         encoding=speech.RecognitionConfig.AudioEncoding.LINEAR16,
-#         sample_rate_hertz=16000,
-#         language_code="en-US",
-#     )
-
-#     # Transcribe audio
-#     response = client.recognize(config=config, audio=audio)
-
-#     # Extract and return transcribed text
-#     for result in response.results:
-#         print(f"Transcription: {result.alternatives[0].transcript}")
-#     return response.results[0].alternatives[0].transcript
-
-
-
-# @app.route('/analyze_text', methods=['POST'])
-# def analyze_text():
-#     data = request.get_json()
-#     if 'text' not in data:
-#         return jsonify({"error": "No text provided"}), 400
-    
-
-#     # result={"transactions": []}
-#     # text = data['text']
-
-#     # result["transactions"]= json.loads(octoai_api(text))
-
-
-#     #TODO: have to rethink this with flask sessions later
-#     for transaction in result["transactions"]:
-#         if transaction["receiver"].lower() in ['i','my','me','you']:
-#             transaction["amount"] *= -1
-#     # print(result)
-#     return jsonify(result)
-
-# if __name__ == '__main__':
-#     app.run(debug=True)
