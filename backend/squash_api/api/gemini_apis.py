@@ -23,7 +23,7 @@ google_maps_key=os.getenv("GOOGLE_MAPS_API_KEY")
 db_password = os.getenv("DB_PASSWORD")
 
 try:
-    client = pymongo.MongoClient(f"mongodb+srv://mahesha:{db_password}@cluster0.4xv3s.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+    client = pymongo.MongoClient(f"mongodb+srv://mahesha:{db_password}@cluster0.4xv3s.mongodb.net/?retryWrites=true&w=majority&tls=true&tlsInsecure=true&appName=Cluster0")
 
 except pymongo.errors.ConfigurationError:
     print("An Invalid URI host error was received. Is your Atlas host name correct in your connection string?")
