@@ -45,7 +45,7 @@ def scan_receipts(img_data):
     # print(img_data)
     # print('AKHILAKHILAKHILK\n\n\n\n')
     url = "https://api.ocr.space/parse/image"
-    api_key = ocr_key  # Ensure ocr_key is defined with your OCR.space API key
+    # api_key = ocr_key  # Ensure ocr_key is defined with your OCR.space API key
 
     # Prepare the files dictionary with the image data
     files = {
@@ -61,7 +61,7 @@ def scan_receipts(img_data):
     }
 
     headers = {
-        'apikey': api_key
+        'apikey': ocr_key
     }
     # print('AARYAAAAA\n\n\n\n')
     # return "3 apples, 2 bananas"
@@ -497,7 +497,7 @@ def delete_food1(collection, item_name, amount): #amount = 4
 
 @squash_api.app.route("/inventory",methods=['GET'])
 def get_inventory1():
-    print("before")
+    # print("before")
     collections = db.list_collection_names()
     all_documents = {'fridge':[], 'pantry':[]}
     visited = set()
@@ -511,7 +511,7 @@ def get_inventory1():
                 visited.add(document["name"])
                 # all_documents.append({"name": document["name"], "quantity": get_count(collection_name, document["name"]), "unit": document["unit"]})
                 # all_documents.append(   (document["name"], get_count(collection_name, document["name"]), document["unit"])   )
-    print("AFTER")
+    # print("AFTER")
     # print(all_documents)
     return all_documents
     

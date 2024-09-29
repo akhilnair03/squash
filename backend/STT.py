@@ -69,78 +69,78 @@ def transcribe_audio(audio_data, sample_rate=16000):
     return text
 
 
-def scan_receipts(img=None):
+# def scan_receipts(img=None):
 
-    url = "https://api.ocr.space/parse/image"
-    api_key = ocr_key
-    image_path = "receipt2.png"
+#     url = "https://api.ocr.space/parse/image"
+#     api_key = ocr_key
+#     image_path = "receipt2.png"
 
-    with open(image_path, 'rb') as image_file:
-        files = {
-            'file': image_file
-        }
+#     with open(image_path, 'rb') as image_file:
+#         files = {
+#             'file': image_file
+#         }
         
-        payload = {
-            'language': 'eng',
-            'isOverlayRequired': 'false',
-            'iscreatesearchablepdf': 'false',
-            'issearchablepdfhidetextlayer': 'false',
-            'isTable': 'true'
-        }
+#         payload = {
+#             'language': 'eng',
+#             'isOverlayRequired': 'false',
+#             'iscreatesearchablepdf': 'false',
+#             'issearchablepdfhidetextlayer': 'false',
+#             'isTable': 'true'
+#         }
 
-        headers = {
-            'apikey': api_key
-        }
-        # Send the image to OCR.space
-        response = requests.post(url, headers=headers, data=payload, files=files)
-        result = response.json()
+#         headers = {
+#             'apikey': api_key
+#         }
+#         # Send the image to OCR.space
+#         response = requests.post(url, headers=headers, data=payload, files=files)
+#         result = response.json()
 
-        # Print the result
-        # print(result['ParsedResults'][0]['ParsedText'])
-        res = result['ParsedResults'][0]['ParsedText'].split('\t\r\n')
-        return ','.join(res)
-
-
-
-def gemini_generator(text,input_form: Forms=Forms.STT, meal=None):
-    genai.configure(api_key=gemini_key)
-    model = genai.GenerativeModel("gemini-1.5-pro-latest")
-
-    date_str = f"Today's date is {datetime.now().date()}. Message = "
-
-    if input_form == Forms.STT:
-        prompt = date_str + text + """: convert this into JSON format. Only output the JSON.
-
-        Use this JSON schema:
-
-        Food = {"name": str, count": int, "expiry": date}
-        Return: {"pantry": list[Food], "fridge": list[Food]"""
-    elif input_form == Forms.RECEIPT:
-        prompt = date_str + text + """: convert this into JSON format. Generalize the food items i.e. make lowercase and ensure spelling is correct and plural. Divide weight by average weight of item to obtain count. Only output the JSON. 
-
-        Use this JSON schema:
-
-        Food = {"name": str, count": int, "expiry": date}
-        Return: {"pantry": list[Food], "fridge": list[Food]"""
-    else:
-        # TODO : UPDATE THE JSON SCHEMA
-        # ADD BREAKFAST DINNER LUNCH
-
-        prompt = date_str + text + """: using these ingredients along with their quantities and units, give me 3 recipes for a dish in the following format e.g. [{“name”: “pasta”, “ingredients”: [“pasta sauce: 5 oz”, “frozen veggies: .2 lbs”, “raviolli: .1 lbs”], “instructions”: [“Boil the pasta”, “Add spices”, ...], “time (mins)“: 20}
-        and for the 
-        Use this JSON schema:
-
-        Food = {"name": str, count": int, "expiry": date}
-        Return: {"pantry": list[Food], "fridge": list[Food]"""
+#         # Print the result
+#         # print(result['ParsedResults'][0]['ParsedText'])
+#         res = result['ParsedResults'][0]['ParsedText'].split('\t\r\n')
+#         return ','.join(res)
 
 
 
-    result = model.generate_content(prompt)
-    generated_json = result.text
-    clean_json = generated_json.replace("```json", "").replace("```", "").strip()
-    ingredients = json.loads(clean_json)
+# def gemini_generator(text,input_form: Forms=Forms.STT, meal=None):
+#     genai.configure(api_key=gemini_key)
+#     model = genai.GenerativeModel("gemini-1.5-pro-latest")
 
-    return json.loads(ingredients)
+#     date_str = f"Today's date is {datetime.now().date()}. Message = "
+
+#     if input_form == Forms.STT:
+#         prompt = date_str + text + """: convert this into JSON format. Only output the JSON.
+
+#         Use this JSON schema:
+
+#         Food = {"name": str, count": int, "expiry": date}
+#         Return: {"pantry": list[Food], "fridge": list[Food]"""
+#     elif input_form == Forms.RECEIPT:
+#         prompt = date_str + text + """: convert this into JSON format. Generalize the food items i.e. make lowercase and ensure spelling is correct and plural. Divide weight by average weight of item to obtain count. Only output the JSON. 
+
+#         Use this JSON schema:
+
+#         Food = {"name": str, count": int, "expiry": date}
+#         Return: {"pantry": list[Food], "fridge": list[Food]"""
+#     else:
+#         # TODO : UPDATE THE JSON SCHEMA
+#         # ADD BREAKFAST DINNER LUNCH
+
+#         prompt = date_str + text + """: using these ingredients along with their quantities and units, give me 3 recipes for a dish in the following format e.g. [{“name”: “pasta”, “ingredients”: [“pasta sauce: 5 oz”, “frozen veggies: .2 lbs”, “raviolli: .1 lbs”], “instructions”: [“Boil the pasta”, “Add spices”, ...], “time (mins)“: 20}
+#         and for the 
+#         Use this JSON schema:
+
+#         Food = {"name": str, count": int, "expiry": date}
+#         Return: {"pantry": list[Food], "fridge": list[Food]"""
+
+
+
+#     result = model.generate_content(prompt)
+#     generated_json = result.text
+#     clean_json = generated_json.replace("```json", "").replace("```", "").strip()
+#     ingredients = json.loads(clean_json)
+
+#     return json.loads(ingredients)
 
 
 
