@@ -203,6 +203,9 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in allowed_extensions
 
+
+# def modify():
+
 @squash_api.app.route('/upload_receipt/', methods=["POST"])
 def upload_receipt():
     # print(request.files)
@@ -238,6 +241,8 @@ def upload_receipt():
 
     # Generate the response using gemini_generator
     response_data = gemini_generator(prompt)
+
+    
 
     return jsonify(response_data), 201
 
@@ -288,7 +293,7 @@ def upload_speech():
     result = model.transcribe(audio_file_path)
 
     text = result['text']
-
+    # text = "I bought 2 eggs from the store"
     # Print and return the transcribed text
     print("Transcribed Text:", text)
 
@@ -303,8 +308,13 @@ def upload_speech():
         Return: {"pantry": list[Food], "fridge": list[Food]
         Make sure the final output is in PROPER JSON format
         """
-
-    return flask.jsonify(gemini_generator(prompt)), 201
+    response = gemini_generator(prompt)
+    for type in response:
+        for food in response[type]:
+            # if food['unit'] 
+            insert_food(type,food['name'], food['count'], None, food['expiry'])
+    # print('AKHIL', response)
+    return jsonify(response), 200
 
 def get_location():
     print('Before get loco')
