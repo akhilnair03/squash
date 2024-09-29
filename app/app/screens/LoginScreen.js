@@ -7,7 +7,7 @@ import Logo from "../components/Logo";
 import Header from "../components/Header";
 import Button from "../components/Button";
 import TextInput from "../components/TextInput";
-import BackButton from "../components/BackButton";
+import AppIcon from "../components/AppIcon";
 import { theme } from "../core/theme";
 import { emailValidator } from "../helpers/emailValidator";
 import { passwordValidator } from "../helpers/passwordValidator";
@@ -32,7 +32,7 @@ export default function LoginScreen({ navigation }) {
 
   return (
     <Background>
-      <BackButton goBack={navigation.goBack} />
+      <AppIcon filename={"back.png"} functionality={navigation.goBack} />
       <Logo />
       <Header>Hello.</Header>
       <TextInput

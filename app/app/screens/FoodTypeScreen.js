@@ -1,6 +1,6 @@
 import React from "react";
 import Background from "../components/Background";
-import BackButton from "../components/BackButton";
+import AppIcon from "../components/AppIcon";
 import { View, Text, StyleSheet } from "react-native";
 
 export default function FoodType({ route, navigation }) {
@@ -8,7 +8,7 @@ export default function FoodType({ route, navigation }) {
 
   return (
     <Background>
-        <BackButton goBack={navigation.goBack} />
+        <AppIcon filename={"back.png"} functionality={navigation.goBack} />
         <View style={styles.container}>
             <Text style={styles.title}>{type} Menu</Text>
             {/* Add your food items or logic here based on type */}
