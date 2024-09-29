@@ -1,0 +1,8 @@
+pyproject.toml
+squash_api/__init__.py
+squash_api/config.py
+squash_api.egg-info/PKG-INFO
+squash_api.egg-info/SOURCES.txt
+squash_api.egg-info/dependency_links.txt
+squash_api.egg-info/requires.txt
+squash_api.egg-info/top_level.txt

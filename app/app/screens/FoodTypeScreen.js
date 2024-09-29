@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Background from "../components/Background";
-import BackButton from "../components/BackButton";
-import { View, Text, StyleSheet, FlatList, ActivityIndicator } from "react-native";
+import AppIcon from "../components/AppIcon";
+import { View, Text, StyleSheet } from "react-native";
 
 export default function FoodType({ route, navigation }) {
   const { type } = route.params;
@@ -54,7 +54,7 @@ export default function FoodType({ route, navigation }) {
 
   return (
     <Background>
-      <BackButton goBack={navigation.goBack} />
+      <AppIcon filename={"back.png"} functionality={navigation.goBack} />
       <View style={styles.container}>
         <Text style={styles.title}>{type} Menu</Text>
         <FlatList

@@ -57,8 +57,8 @@ export default function App() {
           <Stack.Screen name="LoginScreen" component={LoginScreen} />
           <Stack.Screen name="RegisterScreen" component={RegisterScreen} />
           <Stack.Screen name="ResetPasswordScreen" component={ResetPasswordScreen} />
-          <Stack.Screen name="HomeScreen" component={AppDrawerNavigator } />
-          <Stack.Screen name="FoodTypeScreen" component={FoodTypeScreen } />
+          <Stack.Screen name="HomeScreen" component={AppDrawerNavigator} />
+          <Stack.Screen name="FoodTypeScreen" component={FoodTypeScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </Provider>
