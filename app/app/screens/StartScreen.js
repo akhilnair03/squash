@@ -5,44 +5,44 @@ import Logo from "../components/Logo";
 import Header from "../components/Header";
 import Button from "../components/Button";
 import Paragraph from "../components/Paragraph";
-import { usePermissions } from 'expo-media-library';
-import { useCameraPermissions, useMicrophonePermissions } from 'expo-camera';
+// import { usePermissions } from 'expo-media-library';
+// import { useCameraPermissions, useMicrophonePermissions } from 'expo-camera';
 
 export default function StartScreen({ navigation }) {
-  const [cameraPermissions, requestCameraPermission] = useCameraPermissions();
-  const [microphonePermission, requestMicrophonePermission] = useMicrophonePermissions();
-  const [mediaLibraryPermission, requestMediaLibraryPermission] = usePermissions();
+  // const [cameraPermissions, requestCameraPermission] = useCameraPermissions();
+  // const [microphonePermission, requestMicrophonePermission] = useMicrophonePermissions();
+  // const [mediaLibraryPermission, requestMediaLibraryPermission] = usePermissions();
 
-  async function handleContinue() {
-    const allPermissions = await requestAllPermissions();
-    if (!allPermissions) {
-      Alert.alert("To continue please provide permissions in settings");
-    } else {
-      router.replace("LoginScreen");
-    }
-  }
+  // async function handleContinue() {
+  //   const allPermissions = await requestAllPermissions();
+  //   if (!allPermissions) {
+  //     Alert.alert("To continue please provide permissions in settings");
+  //   } else {
+  //     router.replace("LoginScreen");
+  //   }
+  // }
 
-  async function requestAllPermissions() {
-    const cameraStatus = await requestCameraPermission();
-    if (!cameraStatus.granted) {
-      Alert.alert("Error", "Camera permission is required")
-      return false;
-    }
+  // async function requestAllPermissions() {
+  //   const cameraStatus = await requestCameraPermission();
+  //   if (!cameraStatus.granted) {
+  //     Alert.alert("Error", "Camera permission is required")
+  //     return false;
+  //   }
 
-    const microphoneStatus = await requestMicrophonePermission();
-    if (!microphoneStatus.granted) {
-      Alert.alert("Error", "Microphone permission is required")
-      return false;
-    }
+  //   const microphoneStatus = await requestMicrophonePermission();
+  //   if (!microphoneStatus.granted) {
+  //     Alert.alert("Error", "Microphone permission is required")
+  //     return false;
+  //   }
 
-    const mediaLibraryStatus = await requestMediaLibraryPermission();
-    if (!mediaLibraryStatus.granted) {
-      Alert.alert("Error", "Media library permission is required")
-      return false;
-    }
-    await AsyncStorage.setItem("hasOpened", "true");
-    return true;
-  }
+  //   const mediaLibraryStatus = await requestMediaLibraryPermission();
+  //   if (!mediaLibraryStatus.granted) {
+  //     Alert.alert("Error", "Media library permission is required")
+  //     return false;
+  //   }
+  //   await AsyncStorage.setItem("hasOpened", "true");
+  //   return true;
+  // }
   return (
     <Background>
       <Logo />
@@ -52,10 +52,11 @@ export default function StartScreen({ navigation }) {
       </Paragraph>
       <Button
         mode="contained"
-        onPress={async () => {
-          await handleContinue();
-          navigation.navigate("LoginScreen")
-        }}
+        // onPress={async () => {
+        //   await handleContinue();
+        //   navigation.navigate("LoginScreen")
+        // }}
+        onPress={() => navigation.navigate("LoginScreen")}
       >
         Log in
       </Button>
