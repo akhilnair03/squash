@@ -240,7 +240,13 @@ def upload_receipt():
     """
 
     # Generate the response using gemini_generator
-    response_data = gemini_generator(prompt)
+    response = gemini_generator(prompt)
+    for type in response:
+        for food in response[type]:
+            # if food['unit'] 
+            insert_food(type,food['name'], food['count'], None, food['expiry'])
+    # print('AKHIL', response)
+    return jsonify(response), 200
 
     
 
