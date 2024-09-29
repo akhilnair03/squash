@@ -306,7 +306,7 @@ def upload_speech():
     print("Transcribed Text:", text)
 
     # transcript = "I bought 10 apples, 5 bananas, and 4 gallons of milk, and 4 dozen eggs from the store"
-
+ 
     date_str = f"Today's date is {datetime.now().date()}. Message = "
     prompt = date_str + text + """: convert this into JSON format. Only output the JSON.
 
@@ -317,6 +317,7 @@ def upload_speech():
         Make sure the final output is in PROPER JSON format
         """
     response = gemini_generator(prompt)
+    
     for type in response:
         for food in response[type]:
             # if food['unit'] 
