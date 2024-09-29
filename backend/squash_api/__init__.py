@@ -9,12 +9,6 @@ CORS(app)
 # Read settings from config module (insta485/config.py)
 app.config.from_object('squash_api.config')
 
-# Overlay settings read from a Python file whose path is set in the environment
-# variable INSTA485_SETTINGS. Setting this environment variable is optional.
-# Docs: http://flask.pocoo.org/docs/latest/config/
-#
-# EXAMPLE:
-# $ export INSTA485_SETTINGS=secret_key_config.py
 app.config.from_envvar('SQUASH_SETTINGS', silent=True)
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16 MB
 

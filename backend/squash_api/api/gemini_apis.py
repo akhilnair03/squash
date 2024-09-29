@@ -49,15 +49,7 @@ SCANNING AND GEMINI GENERATOR
 
 
 def scan_receipts(img_data):
-    # print(img_data)
-    # print('AKHILAKHILAKHILK\n\n\n\n')
     url = "https://api.ocr.space/parse/image"
-    # api_key = ocr_key  # Ensure ocr_key is defined with your OCR.space API key
-
-    # Prepare the files dictionary with the image data
-    files = {
-        'file': ('receipt.jpg', img_data)
-    }
 
     payload = {
         'language': 'eng',
@@ -71,14 +63,10 @@ def scan_receipts(img_data):
     headers = {
         'apikey': ocr_key
     }
-    # print('AARYAAAAA\n\n\n\n')
-    # return "3 apples, 2 bananas"
-    # Send the image to OCR.space
+
     response = requests.post(url, headers=headers, data=payload)
-    print("hellllll")
     result = response.json()
 
-    # Check if the OCR request was successful
     if result.get('IsErroredOnProcessing'):
         error_message = result.get('ErrorMessage', ['Unknown error'])[0]
         print(f"OCR Error: {error_message}")
@@ -91,43 +79,9 @@ def scan_receipts(img_data):
     else:
         parsed_text = ''
 
-    # Print the result for debugging
-    print(parsed_text, "HEREEEEEEEE")
-
     # Process the parsed text as needed
     res = parsed_text.split('\t\r\n')
     return ','.join(res)
-
-# def scan_receipts(img=None):
-
-#     url = "https://api.ocr.space/parse/image"
-#     api_key = ocr_key
-#     image_path = "/Users/adimahesh/mhacks/squash/backend/squash_api/api/receipt2.png"
-
-#     with open(image_path, 'rb') as image_file:
-#         files = {
-#             'file': image_file
-#         }
-
-#         payload = {
-#             'language': 'eng',
-#             'isOverlayRequired': 'false',
-#             'iscreatesearchablepdf': 'false',
-#             'issearchablepdfhidetextlayer': 'false',
-#             'isTable': 'true'
-#         }
-
-#         headers = {
-#             'apikey': api_key
-#         }
-#         # Send the image to OCR.space
-#         response = requests.post(url, headers=headers, data=payload, files=files)
-#         result = response.json()
-
-#         # Print the result
-#         print(result, "HEREEEEEEEE")
-#         res = result['ParsedResults'][0]['ParsedText'].split('\t\r\n')
-#         return ','.join(res)
 
 
 def gemini_generator(prompt):
@@ -140,22 +94,6 @@ def gemini_generator(prompt):
     ingredients = json.loads(clean_json)
     return ingredients
 
-
-
-
-
-
-# insert_food("fridge", "eggs", 8, None, "01/10/2024")
-# insert_food("fridge", "eggs", 16, None, "01/12/2024")
-# get_count("fridge", "eggs")
-# insert_food("fridge", "milk", 3, "oz", "03/10/2024")
-# insert_food("pantry", "bananas", 4, None, "04/10/2024")
-# delete_food("pantry", "bananas", 2)
-# delete_food("fridge", "milk", 3)
-# delete_food("fridge", "eggs", 20)
-# delete_food("fridge", "milk", 3)
-# delete_food("pantry", "bananas", 4)
-# get_inventory()
 
 @squash_api.app.route('/get_recipes', methods=['POST'])
 def get_recipes():
@@ -206,35 +144,15 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in allowed_extensions
 
 
-# def modify():
-
 @squash_api.app.route('/upload_receipt/', methods=["POST"])
 def upload_receipt():
     # print(request.files)
     print('Akhil')
     output = json.loads(request.get_data())
     image_file = output["data"]
-    # print(image_file)
-    # # Check if the image file is in the request
-    # if not image_file:
-    #     return jsonify({"error": "No image file provided"}), 400
 
-
-    # # If the user does not select a file
-    # if image_file.filename == '':
-    #     return jsonify({"error": "No selected file"}), 400
-
-    # # Optionally, validate the file type
-    # if not allowed_file(image_file.filename):
-    #     return jsonify({"error": "Unsupported file type"}), 400
-
-    # # Read the image data into memory
-    # image_data = image_file.read()
-
-    # Pass the image data to scan_receipts
     text = scan_receipts(image_file)
-    # print("HI")
-    # print(text)
+
     date_str = f"Today's date is {datetime.now().date()}. Message = "
     prompt = date_str+ "This is the current date " + text + """: convert this into JSON format. Generalize the food items i.e. make lowercase and ensure spelling is correct and plural. Divide weight by average weight of item to obtain count. If an expiry date is not given, add the average expiry time onto the current date. Only output the JSON. 
 
@@ -253,27 +171,6 @@ def upload_receipt():
     # print(response_data)
 
     return jsonify(response), 201
-
-
-# def upload_receipt():
-#     print("Here")
-#     # date_str = f"Today's date is {datetime.now().date()}. Message = "
-#     data = request.get_json()
-#     img = data.get("data")
-
-#     #text will be equal to results of scan reciept
-#     text = scan_receipts(img)
-
-#     prompt = text + """: convert this into JSON format. Generalize the food items i.e. make lowercase and ensure spelling is correct and plural. Divide weight by average weight of item to obtain count. Only output the JSON. 
-
-#         Use this JSON schema:
-
-#         Food = {"name": str, count": int, "expiry": date}
-#         Return: {"pantry": list[Food], "fridge": list[Food]
-#         Make sure the final output is in PROPER JSON format
-#         """
-
-#     return flask.jsonify(gemini_generator(prompt)), 201
 
 
 @squash_api.app.route('/upload_speech',methods=['POST'])
@@ -301,12 +198,9 @@ def upload_speech():
     result = model.transcribe(audio_file_path)
 
     text = result['text']
-    # text = "I bought 2 eggs from the store"
-    # Print and return the transcribed text
+   
     print("Transcribed Text:", text)
 
-    # transcript = "I bought 10 apples, 5 bananas, and 4 gallons of milk, and 4 dozen eggs from the store"
- 
     date_str = f"Today's date is {datetime.now().date()}. Message = "
     prompt = date_str + text + """: convert this into JSON format. Only output the JSON.
 
@@ -320,13 +214,11 @@ def upload_speech():
     
     for type in response:
         for food in response[type]:
-            # if food['unit'] 
+          
             insert_food(type,food['name'], food['count'], None, food['expiry'])
-    # print('AKHIL', response)
     return jsonify(response), 200
 
 def get_location():
-    print('Before get loco')
     try:
         # Make a request to the ipinfo API
         response = requests.get('https://ipinfo.io/')
@@ -337,10 +229,6 @@ def get_location():
             data = response.json()
             # Extract location information
             location = {
-                # 'IP': data.get('ip'),
-                # 'City': data.get('city'),
-                # 'Region': data.get('region'),
-                # 'Country': data.get('country'),
                 'Location': data.get('loc')  # Latitude and Longitude
             }
             return location
@@ -372,28 +260,6 @@ def get_nearby_food_banks(latitude, longitude):
     else:
         print("Error:", response.status_code, response.text)
         return None
-
-    # # Google Places API Nearby Search URL
-    # url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json"
-
-    # # Define parameters
-    # params = {
-    #     'location': f'{latitude},{longitude}',
-    #     'radius': 16000,  # Radius in meters
-    #     'type': 'food_banks for less fortunate',  # Searching for food banks
-    #     'key': google_maps_key
-    # }
-
-    # # Make the request to Google Places API
-    # response = requests.get(url, params=params)
-
-    # # Check if the request was successful
-    # if response.status_code == 200:
-    #     # Parse the JSON response
-    #     return response.json().get('results', [])
-    # else:
-    #     print("Error:", response.status_code, response.text)
-    #     return None
 
 # Function to get additional details of a place (such as phone number and opening hours)
 def get_place_details(place_id):
@@ -445,7 +311,7 @@ def calculate_distance(lat1, lon1, lat2, lon2):
 @squash_api.app.route('/find_food_banks', methods=['GET'])
 def find_food_banks():
     # Google Places API Nearby Search URL
-    url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json"
+    # url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json"
     latitude,longitude = get_location()['Location'].strip().split(',')
     # Define parameters
     nearby_places = get_nearby_food_banks(latitude, longitude)
@@ -489,11 +355,6 @@ def find_food_banks():
         return jsonify({"error": "No nearby food banks found."}), 404
 
 
-
-
-
-
-
 '''
 THESE ARE WHEN AARYA IS PUSHING BUTTONS OR TRYING TO SEE ALL
 '''
@@ -529,7 +390,7 @@ def get_count(collection, item_name):
     return amount
 
 # @squash_api.app.route("/delete/<collection: str>/<item_name: str>/<amount: int>",methods=['POST'])
-def delete_food1(collection, item_name, amount): #amount = 4
+def delete_food(collection, item_name, amount): #amount = 4
     foods = db[collection].find({"name": item_name}).sort({"expiryDate": 1}).to_list()
     total = 0 # 8
     for food in foods:
@@ -548,7 +409,6 @@ def delete_food1(collection, item_name, amount): #amount = 4
 
 @squash_api.app.route("/inventory",methods=['GET'])
 def get_inventory1():
-    # print("before")
     collections = db.list_collection_names()
     all_documents = {'fridge':[], 'pantry':[]}
     visited = set()
@@ -560,10 +420,6 @@ def get_inventory1():
                 item_info = {"name": document["name"], "quantity": get_count(collection_name, document["name"]), "unit": document["unit"]}
                 all_documents[collection_name].append(item_info)
                 visited.add(document["name"])
-                # all_documents.append({"name": document["name"], "quantity": get_count(collection_name, document["name"]), "unit": document["unit"]})
-                # all_documents.append(   (document["name"], get_count(collection_name, document["name"]), document["unit"])   )
-    # print("AFTER")
-    # print(all_documents)
     return all_documents
 
 
