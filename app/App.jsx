@@ -1,20 +1,28 @@
+// App.jsx
+
 import React, { useEffect } from "react";
 import { Provider } from "react-native-paper";
 import { useFonts } from 'expo-font';
-import { NavigationContainer } from "@react-navigation/native";
-import { createStackNavigator } from "@react-navigation/stack";
 import * as SplashScreen from 'expo-splash-screen';
 
 import { theme } from "./app/core/theme";
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
+import { createDrawerNavigator } from "@react-navigation/drawer";
+
 import {
   StartScreen,
   LoginScreen,
   RegisterScreen,
   ResetPasswordScreen,
   HomeScreen,
+  FoodBankScreen,
+  InventoryScreen,
+  FoodTypeScreen
 } from "./app/screens";
 
 const Stack = createStackNavigator();
+const Drawer = createDrawerNavigator();
 
 // Prevent the splash screen from auto-hiding before asset loading is complete
 SplashScreen.preventAutoHideAsync();
@@ -43,20 +51,26 @@ export default function App() {
       <NavigationContainer>
         <Stack.Navigator
           initialRouteName="StartScreen"
-          screenOptions={{
-            headerShown: false,
-          }}
+          screenOptions={{ headerShown: false }}
         >
           <Stack.Screen name="StartScreen" component={StartScreen} />
           <Stack.Screen name="LoginScreen" component={LoginScreen} />
           <Stack.Screen name="RegisterScreen" component={RegisterScreen} />
-          <Stack.Screen name="HomeScreen" component={HomeScreen} />
-          <Stack.Screen
-            name="ResetPasswordScreen"
-            component={ResetPasswordScreen}
-          />
+          <Stack.Screen name="ResetPasswordScreen" component={ResetPasswordScreen} />
+          <Stack.Screen name="HomeScreen" component={AppDrawerNavigator } />
+          <Stack.Screen name="FoodTypeScreen" component={FoodTypeScreen } />
         </Stack.Navigator>
       </NavigationContainer>
     </Provider>
+  );
+}
+
+function AppDrawerNavigator() {
+  return (
+    <Drawer.Navigator initialRouteName="HomeScreen">
+      <Drawer.Screen name="Home Screen" component={HomeScreen} />
+      <Drawer.Screen name="Food Banks Near You" component={FoodBankScreen} />
+      <Drawer.Screen name="Food Inventory" component={InventoryScreen} />
+    </Drawer.Navigator>
   );
 }
