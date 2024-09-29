@@ -8,34 +8,34 @@ import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import { Audio } from 'expo-av';
 
 export default function HomeScreen({ navigation }) {
-  const [facing, setFacing] = useState<CameraType>('back');
+  // const [facing, setFacing] = useState<CameraType>('back');
 
-  // Request permissions on component mount
-  useEffect(() => {
-    (async () => {
-      const cameraPermission = await Camera.requestPermissionsAsync();
-      const audioPermission = await Audio.requestPermissionsAsync();
+  // // Request permissions on component mount
+  // useEffect(() => {
+  //   (async () => {
+  //     const cameraPermission = await Camera.requestPermissionsAsync();
+  //     const audioPermission = await Audio.requestPermissionsAsync();
 
-      setHasCameraPermission(cameraPermission.status === 'granted');
-      setHasAudioPermission(audioPermission.status === 'granted');
-    })();
-  }, []);
+  //     setHasCameraPermission(cameraPermission.status === 'granted');
+  //     setHasAudioPermission(audioPermission.status === 'granted');
+  //   })();
+  // }, []);
 
-  // Handle camera functionality
-  const handleCameraPress = () => {
-    if (hasCameraPermission) {
-      navigation.navigate("CameraScreen"); // Create this screen to handle camera input
-    } else {
-      Alert.alert("Camera Permission", "Permission to access camera is required.");
-    }
-  };
+  // // Handle camera functionality
+  // const handleCameraPress = () => {
+  //   if (hasCameraPermission) {
+  //     navigation.navigate("CameraScreen"); // Create this screen to handle camera input
+  //   } else {
+  //     Alert.alert("Camera Permission", "Permission to access camera is required.");
+  //   }
+  // };
 
   return (
     <Background style={styles.wrapper}>
       <View style={styles.topright}>
         <Header>Welcome 💫</Header>
-        <AppIcon filename={"camera.jpg"} functionality={handleCameraPress} />
-        <AppIcon filename={"microphone.png"} functionality={handleMicrophonePress} />
+        {/* <AppIcon filename={"camera.jpg"} functionality={handleCameraPress} />
+        <AppIcon filename={"microphone.png"} functionality={handleMicrophonePress} /> */}
       </View>
       <View style={styles.buttonContainer}>
         <Button onPress={() => navigation.navigate("FoodTypeScreen", { type: "Breakfast" })}>
