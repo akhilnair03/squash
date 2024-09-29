@@ -38,13 +38,13 @@ export default function HomeScreen({ navigation }) {
         <AppIcon filename={"microphone.png"} functionality={handleMicrophonePress} /> */}
       </View>
       <View style={styles.buttonContainer}>
-        <Button onPress={() => navigation.navigate("FoodTypeScreen", { type: "Breakfast" })}>
+        <Button onPress={() => navigation.navigate("FoodTypeScreen", { type: "breakfast" })}>
           Breakfast
         </Button>
-        <Button onPress={() => navigation.navigate("FoodTypeScreen", { type: "Lunch" })}>
+        <Button onPress={() => navigation.navigate("FoodTypeScreen", { type: "lunch" })}>
           Lunch
         </Button>
-        <Button onPress={() => navigation.navigate("FoodTypeScreen", { type: "Dinner" })}>
+        <Button onPress={() => navigation.navigate("FoodTypeScreen", { type: "dinner" })}>
           Dinner
         </Button>
       </View>

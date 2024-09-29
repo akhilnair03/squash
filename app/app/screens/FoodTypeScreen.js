@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import Background from "../components/Background";
 import AppIcon from "../components/AppIcon";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, ActivityIndicator, FlatList } from "react-native";
 
 export default function FoodType({ route, navigation }) {
+  console.log("ROUTE", route)
   const { type } = route.params;
   const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -12,12 +13,13 @@ export default function FoodType({ route, navigation }) {
   useEffect(() => {
     const fetchRecipes = async () => {
       try {
-        const response = await fetch('localhost:8000/get_recipes/', {
+        console.log("Type", type)
+        const response = await fetch('http://localhost:8000/get_recipes', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ FoodType: type }),
+          body: JSON.stringify({ "food_type": type }),
         });
 
         if (!response.ok) {
@@ -26,6 +28,7 @@ export default function FoodType({ route, navigation }) {
 
         const data = await response.json();
         setRecipes(data); // Assuming the response is an array of recipes
+        console.log("before")
       } catch (err) {
         setError(err.message);
       } finally {
@@ -56,7 +59,7 @@ export default function FoodType({ route, navigation }) {
     <Background>
       <AppIcon filename={"back.png"} functionality={navigation.goBack} />
       <View style={styles.container}>
-        <Text style={styles.title}>{type} Menu</Text>
+        <Text style={styles.title}>{type.charAt(0).toUpperCase() + type.slice(1)} Menu</Text>
         <FlatList
           data={recipes}
           keyExtractor={(item) => item.name} // Assuming name is unique
