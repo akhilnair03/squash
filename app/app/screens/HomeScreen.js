@@ -8,10 +8,6 @@ import { Audio } from 'expo-av';
 import * as FileSystem from 'expo-file-system';
 import Constants from 'expo-constants';
 
-const apiKey = Constants.expoConfig.extra.googleCloudApiKey;
-
-const GOOGLE_CLOUD_API_URL = `https://speech.googleapis.com/v1/speech:recognize?key=${apiKey}`;
-
 export default function HomeScreen({ navigation }) {
   const [recording, setRecording] = useState(null);
   const [transcription, setTranscription] = useState('');
