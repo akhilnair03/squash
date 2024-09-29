@@ -131,10 +131,9 @@ def gemini_generator(prompt):
 @squash_api.app.route('/get_recipes', methods=['POST'])
 def get_recipes():
     data = request.get_json()
+    print("DATA", data)
     meal = data.get("food_type")
-    print(meal)
     inventory = get_inventory1() # dictionary {'fridge':[], 'pantry': []}
-    print(inventory)
     res=""    
     for type in inventory:
         for item in inventory[type]:
@@ -267,13 +266,13 @@ def get_inventory():
     get_inventory1()
 
 
-# @app.route("/add_food/<collection: str>/<item_name: str>/<quantity: int>/<unit: str>/<expiryDate: str>",methods=['POST'])
+# @squash_api.app.route("/add_food/<collection: str>/<item_name: str>/<quantity: int>/<unit: str>/<expiryDate: str>",methods=['POST'])
 def insert_food(collection, item_name, quantity, unit, expiryDate):
     db_collection = db[collection]
     db_collection.insert_one({"name": item_name, "quantity": quantity, "unit": unit, "expiryDate": expiryDate})
 
 
-# @app.route("/count/<collection: str>/<name: str>",methods=['GET'])
+# @squash_api.app.route("/count/<collection: str>/<name: str>",methods=['GET'])
 def get_count(collection, item_name):
     results = db[collection].find({"name": item_name})
     amount = 0
@@ -282,7 +281,7 @@ def get_count(collection, item_name):
     # print(amount)
     return amount
 
-# @app.route("/delete/<collection: str>/<item_name: str>/<amount: int>",methods=['POST'])
+# @squash_api.app.route("/delete/<collection: str>/<item_name: str>/<amount: int>",methods=['POST'])
 def delete_food1(collection, item_name, amount): #amount = 4
     foods = db[collection].find({"name": item_name}).sort({"expiryDate": 1}).to_list()
     total = 0 # 8
@@ -300,7 +299,7 @@ def delete_food1(collection, item_name, amount): #amount = 4
             db[collection].update_one({"_id": food["_id"]}, {"$set": {"quantity": food["quantity"] - (amount - removed)}})
             removed = amount
 
-# @app.route("/inventory",methods=['GET'])
+@squash_api.app.route("/inventory",methods=['GET'])
 def get_inventory1():
     print("before")
     collections = db.list_collection_names()
