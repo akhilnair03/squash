@@ -13,6 +13,13 @@ import google.generativeai as genai
 import requests
 import json
 
+import numpy as np
+import whisper
+import base64
+import io
+from scipy.io import wavfile
+from pydub import AudioSegment
+
 load_dotenv()
 gemini_key = os.getenv("GEMINI_API_KEY")
 ocr_key = os.getenv("OCR_API_KEY")
@@ -51,7 +58,7 @@ def scan_receipts(img_data):
     files = {
         'file': ('receipt.jpg', img_data)
     }
-    
+
     payload = {
         'language': 'eng',
         'isOverlayRequired': 'false',
@@ -99,7 +106,7 @@ def scan_receipts(img_data):
 #         files = {
 #             'file': image_file
 #         }
-        
+
 #         payload = {
 #             'language': 'eng',
 #             'isOverlayRequired': 'false',
@@ -126,7 +133,7 @@ def gemini_generator(prompt):
     model = genai.GenerativeModel("gemini-1.5-pro-latest")
     result = model.generate_content(prompt)
     generated_json = result.text
-   
+
     clean_json = generated_json.replace("```json", "").replace("```", "").strip()
     ingredients = json.loads(clean_json)
     return ingredients
@@ -134,7 +141,7 @@ def gemini_generator(prompt):
 
 
 
-            
+
 
 # insert_food("fridge", "eggs", 8, None, "01/10/2024")
 # insert_food("fridge", "eggs", 16, None, "01/12/2024")
@@ -185,7 +192,7 @@ def get_recipes():
     ]\n"""
         f"Make sure the final output is PROPER JSON format and matches this structure exactly."
     )
- 
+
 
     return flask.jsonify(gemini_generator(prompt)), 201
 
@@ -243,7 +250,7 @@ def upload_receipt():
 
 #     #text will be equal to results of scan reciept
 #     text = scan_receipts(img)
-    
+
 #     prompt = text + """: convert this into JSON format. Generalize the food items i.e. make lowercase and ensure spelling is correct and plural. Divide weight by average weight of item to obtain count. Only output the JSON. 
 
 #         Use this JSON schema:
@@ -259,11 +266,36 @@ def upload_receipt():
 @squash_api.app.route('/upload_speech',methods=['POST'])
 def upload_speech():
     data = request.get_json()
-    transcript = data.get("transcript")
+    base64_audio = data.get('transcript')
+
+    if not base64_audio:
+        return jsonify({'error': 'No audio data provided'}), 400
+
+    # Decode the Base64 string to binary
+    audio_data = base64.b64decode(base64_audio)
+
+    # Save the decoded audio data to a file
+    audio_file_path = "recording.wav"
+    with open(audio_file_path, 'wb') as audio_file:
+        audio_file.write(audio_data)
+
+    # Convert to WAV using Pydub (if needed)
+    sound = AudioSegment.from_file(audio_file_path)
+    sound.export(audio_file_path, format="wav")
+
+    model = whisper.load_model("base")
+    # Transcribe the audio using Whisper
+    result = model.transcribe(audio_file_path)
+
+    text = result['text']
+
+    # Print and return the transcribed text
+    print("Transcribed Text:", text)
+
     # transcript = "I bought 10 apples, 5 bananas, and 4 gallons of milk, and 4 dozen eggs from the store"
 
     date_str = f"Today's date is {datetime.now().date()}. Message = "
-    prompt = date_str + transcript + """: convert this into JSON format. Only output the JSON.
+    prompt = date_str + text + """: convert this into JSON format. Only output the JSON.
 
         Use this JSON schema:
 
@@ -271,7 +303,7 @@ def upload_speech():
         Return: {"pantry": list[Food], "fridge": list[Food]
         Make sure the final output is in PROPER JSON format
         """
-    
+
     return flask.jsonify(gemini_generator(prompt)), 201
 
 def get_location():
@@ -279,7 +311,7 @@ def get_location():
     try:
         # Make a request to the ipinfo API
         response = requests.get('https://ipinfo.io/')
-        
+
         # If the request was successful
         if response.status_code == 200:
             # Parse the JSON data
@@ -450,7 +482,7 @@ THESE ARE WHEN AARYA IS PUSHING BUTTONS OR TRYING TO SEE ALL
 # def add_food():
 #     location, food_name, quantity, expiry_date = flask.request.args.get('location'), flask.request.args.get('food_name'), flask.request.args.get('quantity'), flask.request.args.get('date')
 #     insert_food(location, food_name, quantity, expiry_date)
-    
+
 
 # @squash_api.app.route('/delete_food', methods=['POST'])
 # def delete_food():
@@ -514,7 +546,7 @@ def get_inventory1():
     # print("AFTER")
     # print(all_documents)
     return all_documents
-    
+
 
 
 
