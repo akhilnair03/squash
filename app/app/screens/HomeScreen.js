@@ -4,10 +4,13 @@ import Background from "../components/Background";
 import Header from "../components/Header";
 import AppIcon from "../components/AppIcon";
 import Button from "../components/Button";
-import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
+import { usePermissions } from 'expo-media-library';
+import { useCameraPermissions, useMicrophonePermissions } from 'expo-camera';
 import { Audio } from 'expo-av';
 
 export default function HomeScreen({ navigation }) {
+  
+
   // const [facing, setFacing] = useState<CameraType>('back');
 
   // // Request permissions on component mount
