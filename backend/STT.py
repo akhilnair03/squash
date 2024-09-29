@@ -139,7 +139,7 @@ def gemini_generator(text,input_form: Forms=Forms.STT, meal=None):
     generated_json = result.text
     clean_json = generated_json.replace("```json", "").replace("```", "").strip()
     ingredients = json.loads(clean_json)
-    # print(ingredients)
+
     return json.loads(ingredients)
 
 
