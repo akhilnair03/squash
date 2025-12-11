@@ -1,16 +1,110 @@
-# Squash: Smart Food Inventory Management App
+# 🥫 Squash – Smart Food Inventory & Waste Reduction App
 
-## Inspiration
-The inspiration for Squash came from the need to streamline and simplify how we track groceries and manage food inventory at home. Often, people struggle to keep track of what they have, leading to unnecessary purchases or food waste. We envisioned a solution that leverages technology—specifically speech and image recognition—to automate the process of adding items to inventory, making grocery management quick, intuitive, and effortless. By combining speech-to-text and OCR (optical character recognition) technologies, we set out to build a tool that would not only help track groceries but also contribute to reducing food waste. We provide users with recipes for any meal of the day to use their groceries and food banks near them to donate if they have a surplus that they won't be able to use.
+Squash is a smart food inventory and waste reduction app designed to help users efficiently manage groceries through voice and receipt inputs. It uses Whisper for speech-to-text, OCR for receipt parsing, and Gemini LLM to contextualize, categorize, and generate recipes — all to help "squash" food waste.
 
-## What It Does
-Squash is a smart food inventory management app designed to make grocery tracking as simple as talking or snapping a picture. Users can add food items to their inventory by either speaking into the app or taking a picture of a grocery receipt. The app uses speech recognition to convert spoken words into text and Optical Character Recognition (OCR) to scan receipts and extract information about the items purchased. Squash then categorizes these items (e.g., breakfast, lunch, dinner) to create recipes. It also stores them in a food inventory list, making it easy to know what you have at home at any given time.
+---
 
-## How We Built It
-We built Squash using a combination of modern technologies for both the frontend and backend:
+## 🌟 Features
 
-- **Frontend:** We used React Native for the mobile application, leveraging its versatility across both iOS and Android platforms. For the voice input functionality, we integrated Expo's audio recording feature, which allows users to speak into the app. We then used a custom UI to display categorized food items, designed with intuitive navigation for different meal types (breakfast, lunch, dinner).
+- 🎙️ **Voice Logging**: Speak your grocery items — transcribed using OpenAI Whisper
+- 🧾 **Receipt Scanning**: Upload photos of receipts and extract food data using OCR
+- 🧠 **Gemini Integration**:
+  - Categorizes items (e.g., pantry vs fridge)
+  - Suggests recipes with soon-to-expire ingredients
+  - Links to nearby food banks
+- 📦 **MongoDB Atlas**: Persistent backend storage for food inventory
+- 📱 **Mobile-ready**: Designed for React Native + Flask backend integration
 
-- **Backend:** The backend is powered by Flask, a Python web framework. We implemented API endpoints to handle both OpenAI Whisper's speech-to-text and OCR processing. For the speech transcription, we convert audio recordings into base64, which is sent to the backend for processing using a machine learning model. The OCR functionality extracts text from receipt images and automatically categorizes the items based on predefined food categories.
+---
 
-We used many of **Gemini's LLMs** to generate responses and insights with our data.
+## 🏗️ Architecture
+
+```
+[User] --> [Speech Input or Receipt Upload]
+        --> [Whisper / OCR.space]
+        --> [Gemini LLM] --> [MongoDB Atlas]
+                        --> [Recipe Suggestions]
+                        --> [Food Bank Suggestions]
+```
+
+### Backend Stack
+
+- Flask API (`__init__.py`)
+- MongoDB Atlas connection (`mongo.py`)
+- OCR via OCR.space
+- Whisper STT and Gemini LLM (`STT.py`)
+- Recipe & food bank suggestion logic (`gemini_apis.py`)
+
+---
+
+## 🚀 Getting Started
+
+### 1. Clone the repo
+
+```bash
+git clone https://github.com/your-username/squash.git
+cd squash
+```
+
+### 2. Setup Python Environment
+
+```bash
+pip install -r requirements.txt
+```
+
+Or, if you're using `pyproject.toml`:
+
+```bash
+pip install .
+```
+
+### 3. Configure API Keys
+
+Create a `.env` file with your credentials:
+
+```env
+GEMINI_API_KEY=your-google-api-key
+OCR_API_KEY=your-ocr-space-key
+DB_PASSWORD=your-mongodb-password
+```
+
+### 4. Run Locally
+
+```bash
+python STT.py         # For audio processing
+python mongo.py       # For database testing
+flask run             # To launch Flask API
+```
+
+---
+
+## 🧪 Example Use Cases
+
+1. Say: _"I bought two cartons of eggs and a bottle of milk."_ → Whisper transcribes → Gemini categorizes + stores in DB
+2. Upload: _Grocery store receipt image_ → OCR extracts items → Gemini parses + stores
+3. Ask for recipes → Gemini returns 3 dishes based on what’s expiring soon
+
+---
+
+## 📌 Future Work
+
+- Add user authentication
+- Weekly waste report and donation history
+- Push notifications for expiring items
+- Recipe filtering by dietary restrictions
+
+---
+
+## 🧑‍💻 Built With
+
+- MongoDB Atlas
+- Flask
+- React Native (Frontend)
+- Google Gemini LLM
+- OCR.space
+- Whisper ASR
+
+---
+
+**Created by**: Aarya Kulshrestha and team  
+**University of Michigan – 2025**
