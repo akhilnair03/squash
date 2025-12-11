@@ -105,6 +105,4 @@ flask run             # To launch Flask API
 - Whisper ASR
 
 ---
-
-**Created by**: Aarya Kulshrestha and team  
 **University of Michigan – 2025**
